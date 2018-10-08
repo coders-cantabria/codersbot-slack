@@ -24,6 +24,7 @@ def event_handler(event_type, slack_event):
             channel = slack_event["event"]["channel"]
             incoming_message = slack_event["event"]["text"]
             coders_bot.answer_message(team_id, user_id, channel, incoming_message)
+            
             return make_response("Answer Sent", 200)
         except Exception:
             return make_response("Unhandled message", 200, {"X-Slack-No-Retry": 1})

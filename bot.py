@@ -14,6 +14,15 @@ forescat_messages = ["PREVISIÓN", "TIEMPO", "PREVISION"]
 greetings_messages = ["HOLA", "HI", "BUENAS", "HEY"]
 thanks_messages = ["GRACIAS"]
 goodbyes_messages = ["ADIOS", "HASTA LUEGO", "CIAO", "BYE"]
+offensive_words_bad = []
+offensive_words = []
+with open('offensivewords.txt', 'r') as myfile:
+    offensive_words_bad = myfile.readlines()
+
+for ow in offensive_words_bad:
+   offensive_words.append(ow.rstrip('\n'))
+
+
 
 class CodersBot(object):
 
@@ -24,7 +33,7 @@ class CodersBot(object):
         self.oauth = {"client_id": config.get("slack", "client_id"),
                       "client_secret": config.get("slack", "client_secret"),
                       "scope": "bot"}
-        self.verification = 'XrcG7qpnCcGQIcl8hbSAC7fj'
+        self.verification = config.get("slack", "verification_token")
         self.client = SlackClient(config.get("slack", "oauth_secret"))
 
     def auth(self, code):
@@ -53,6 +62,11 @@ class CodersBot(object):
         username = user_info["user"]["real_name"]
         return username
 
+    def get_user(self, user_id):
+        user_info = self.client.api_call("users.info", user=user_id)
+        users = user_info["user"]["name"]
+        return users
+
 
     def onboarding_message(self, team_id, user_id):
         self.client.api_call("chat.postMessage",
@@ -66,7 +80,14 @@ class CodersBot(object):
 
 
     def answer_message(self, team_id, user_id, channel, incoming_message):
-        if any(s in incoming_message.upper() for s in next_event_messages):
+        if any(s in incoming_message for s in offensive_words):
+            self.client.api_call("chat.postMessage",
+                channel=channel,
+                username=self.name,
+                icon_emoji=self.emoji,
+                text="Cuida tu lenguaje, @%s https://media.giphy.com/media/GBIzZdF3AxZ6/giphy.gif" % self.get_user(user_id)
+                )
+        elif any(s in incoming_message.upper() for s in next_event_messages):
             next_event = self.next_event()
             self.client.api_call("chat.postMessage",
                 channel=channel,
