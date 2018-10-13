@@ -3,10 +3,13 @@
 import os, datetime, locale, configparser, forecastio, platform
 from slackclient import SlackClient
 
-if platform.system() == "Windows":
-    locale.setlocale(locale.LC_TIME, 'es-ES') 
-else:
-    locale.setlocale(locale.LC_TIME, 'es_ES.utf8')
+try:
+    if platform.system() == "Windows":
+        locale.setlocale(locale.LC_TIME, 'es-ES') 
+    else:
+        locale.setlocale(locale.LC_TIME, 'es_ES.UFT-8')
+except Exception as exc:
+    print("error setting locale. fallback to english %s" % exc)
 
 config = configparser.ConfigParser()
 config.read("config.ini")
