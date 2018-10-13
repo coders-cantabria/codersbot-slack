@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import os, datetime, locale, configparser, forecastio
+import os, datetime, locale, configparser, forecastio, platform
 from slackclient import SlackClient
 
-locale.setlocale(locale.LC_TIME, 'es-ES') # if app runs in linux environments, spanish locale is es_ES
+if platform.system() == "Windows":
+    locale.setlocale(locale.LC_TIME, 'es-ES') 
+else:
+    locale.setlocale(locale.LC_TIME, 'es_ES')
+
 config = configparser.ConfigParser()
 config.read("config.ini")
 authed_teams = {}
