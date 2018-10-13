@@ -6,7 +6,7 @@ from slackclient import SlackClient
 if platform.system() == "Windows":
     locale.setlocale(locale.LC_TIME, 'es-ES') 
 else:
-    locale.setlocale(locale.LC_TIME, 'es_ES')
+    locale.setlocale(locale.LC_TIME, 'es_ES.utf8')
 
 config = configparser.ConfigParser()
 config.read("config.ini")
