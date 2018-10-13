@@ -31,6 +31,10 @@ def event_handler(event_type, slack_event):
 
     return make_response("You have not added an event handler for the %s" % event_type, 200, {"X-Slack-No-Retry": 1})
 
+@app.route("/", methods=["GET"])
+def root():
+    return render_template("index.html")
+
 
 @app.route("/install", methods=["GET"])
 def install():
