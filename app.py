@@ -17,19 +17,21 @@ def event_handler(event_type, slack_event):
         user_id = slack_event["event"]["user"]["id"]
         coders_bot.onboarding_message(team_id, user_id)
         return make_response("Welcome Message Sent", 200)
-    
+
     if event_type == "message" or event_type == "app_mention":
         try:
             user_id = slack_event["event"]["user"]
-            channel = slack_event["event"]["channel"]
-            incoming_message = slack_event["event"]["text"]
-            coders_bot.answer_message(team_id, user_id, channel, incoming_message)
-            
+            if coders_bot.is_myself(user_id):
+                return make_response("Message by myself", 200, {"X-Slack-No-Retry": 1})
+
+            coders_bot.answer_message(slack_event)
+
             return make_response("Answer Sent", 200)
         except Exception:
             return make_response("Unhandled message", 200, {"X-Slack-No-Retry": 1})
 
     return make_response("You have not added an event handler for the %s" % event_type, 200, {"X-Slack-No-Retry": 1})
+
 
 @app.route("/", methods=["GET"])
 def root():
@@ -62,9 +64,8 @@ def hears():
     if coders_bot.verification != slack_event.get("token"):
         message = "Invalid Slack verification token: %s \nCodersBot has: \
                    % s\n\n" % (slack_event["token"], coders_bot.verification)
-                   
-        make_response(message, 403, {"X-Slack-No-Retry": 1})
 
+        make_response(message, 403, {"X-Slack-No-Retry": 1})
 
     if "event" in slack_event:
         event_type = slack_event["event"]["type"]
